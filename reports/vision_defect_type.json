@@ -1,0 +1,93 @@
+{
+  "model": "ResNet-18 (ImageNet) features of the anomaly-peak crop + logistic regression",
+  "crop": "64x64 px around the PatchCore anomaly peak, on 256x256 input",
+  "seed": 42,
+  "train_images": 54,
+  "test_images": 38,
+  "accuracy": 0.7368421052631579,
+  "per_class": {
+    "corte": {
+      "precision": 0.8571428571428571,
+      "recall": 0.75,
+      "f1-score": 0.8,
+      "support": 8.0
+    },
+    "deformacion": {
+      "precision": 0.6666666666666666,
+      "recall": 0.5714285714285714,
+      "f1-score": 0.6153846153846154,
+      "support": 7.0
+    },
+    "mancha": {
+      "precision": 0.8,
+      "recall": 1.0,
+      "f1-score": 0.8888888888888888,
+      "support": 8.0
+    },
+    "pegado": {
+      "precision": 0.75,
+      "recall": 0.75,
+      "f1-score": 0.75,
+      "support": 8.0
+    },
+    "perforacion": {
+      "precision": 0.5714285714285714,
+      "recall": 0.5714285714285714,
+      "f1-score": 0.5714285714285714,
+      "support": 7.0
+    }
+  },
+  "confusion_matrix": {
+    "labels": [
+      "corte",
+      "deformacion",
+      "mancha",
+      "pegado",
+      "perforacion"
+    ],
+    "rows_true_cols_predicted": [
+      [
+        6,
+        0,
+        0,
+        1,
+        1
+      ],
+      [
+        0,
+        4,
+        1,
+        0,
+        2
+      ],
+      [
+        0,
+        0,
+        8,
+        0,
+        0
+      ],
+      [
+        1,
+        1,
+        0,
+        6,
+        0
+      ],
+      [
+        0,
+        1,
+        1,
+        1,
+        4
+      ]
+    ]
+  },
+  "train_counts": {
+    "corte": 11,
+    "deformacion": 10,
+    "mancha": 11,
+    "pegado": 11,
+    "perforacion": 11
+  }
+}

@@ -1,0 +1,56 @@
+{
+  "model": "PatchCore (anomalib 2.7.0, defaults: wide_resnet50_2, layer2+layer3)",
+  "dataset": "MVTec AD / leather",
+  "seed": 42,
+  "device": "cuda",
+  "anomalib_test_metrics": {
+    "image_AUROC": 1.0,
+    "image_F1Score": 0.994535505771637,
+    "pixel_AUROC": 0.9922617673873901,
+    "pixel_F1Score": 0.4385744631290436
+  },
+  "false_rejection_rate": 0.0,
+  "good": {
+    "images": 32,
+    "flagged_as_defect": 0,
+    "rate": 0.0,
+    "score_mean": 0.315040884539485
+  },
+  "recall_per_defect": {
+    "mancha": {
+      "images": 19,
+      "flagged_as_defect": 18,
+      "rate": 0.9473684210526315,
+      "score_mean": 0.6823181008037768
+    },
+    "corte": {
+      "images": 19,
+      "flagged_as_defect": 19,
+      "rate": 1.0,
+      "score_mean": 0.7631534275255705
+    },
+    "deformacion": {
+      "images": 17,
+      "flagged_as_defect": 17,
+      "rate": 1.0,
+      "score_mean": 0.7708609980695388
+    },
+    "pegado": {
+      "images": 19,
+      "flagged_as_defect": 18,
+      "rate": 0.9473684210526315,
+      "score_mean": 0.8864382270135378
+    },
+    "perforacion": {
+      "images": 18,
+      "flagged_as_defect": 18,
+      "rate": 1.0,
+      "score_mean": 0.8287690016958449
+    }
+  },
+  "latency_ms": {
+    "first": 78.80728500003897,
+    "median": 59.90632099974391,
+    "p95": 64.07460150007864
+  }
+}

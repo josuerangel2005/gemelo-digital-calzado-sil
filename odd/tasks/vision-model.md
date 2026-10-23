@@ -1,0 +1,39 @@
+# Feature: vision model (anomaly detection + defect type)
+
+Objective: replace the heuristic `vision/detector.py` stub with a trained model (PatchCore via Anomalib for OK/defect plus a small defect-type classifier) and run the SIL loop on real leather images.
+Branch: `feat/web-mqtt` (user: "mejor creemos una ramita y al final hacemos el pr"). Delivery strategy: `single-pr` (one PR at the end, by user choice). Test runner: `pytest` (Python), `vitest` (web/).
+
+## Specs
+
+- **S1 — Approach (user choice, verbatim):** "Anomalías + tipo (Recommended)": "PatchCore (Anomalib) entrenado solo con piezas buenas decide OK/defecto y da un mapa de calor para ubicar el defecto; un clasificador pequeño pone el tipo (mancha, pegado, corte). Sin etiquetado manual. Costura queda fuera o sintética."
+- **S2 — Dataset:** MVTec AD, category `leather` (CC BY-NC-SA 4.0, academic use). Defect mapping to project labels: `color` → `mancha`, `glue` → `pegado`, `cut` → `corte`, `fold` → `deformacion`, `poke` → `perforacion`. *Assumption:* `costura` stays out of scope for now (no public leather dataset has it); synthetic stitching is a possible follow-up.
+- **S3 — OK/defect:** PatchCore trained only on `leather/train/good`. Report image AUROC, F1 at the chosen threshold, and per-defect recall on the test set.
+- **S4 — Defect type:** small classifier (pretrained backbone features + linear model) trained on a fixed-seed stratified split of the defect images; report a confusion matrix on the held-out part. No manual labeling (labels come from MVTec folder names).
+- **S5 — Localization:** keep the PatchCore anomaly map so the defect can be located (heatmap / bounding box).
+- **S6 — Integration:** the new detector keeps the interface `predict(image) -> {"label": str, "score": float}` (`label == "ok"` means good piece) so `controller/` needs no change; `contracts/decision.schema.json` stays valid. *Assumption:* `score` is defined as a defect score in [0, 1] (Anomalib normalized `pred_score`) and documented in the contract.
+- **S7 — SIL on real images:** *Assumption:* `simulator/` publishes held-out MVTec leather images (never seen in training) instead of synthetic squares, and records the ground truth locally (not in the message, the contract forbids extra fields) so the audit can measure missed defects.
+- **S8 — KPIs (from docs/plan_desarrollo.md):** precision, recall per defect, false rejections, latency per piece "< 200 ms", throughput.
+- **S9 — Reproducibility:** fixed seeds, scripted download/split/train/eval; data and weights are not committed (`data/`, `models/` gitignored); metrics are written to a committed report.
+
+## Tasks
+
+| ID | Specs | Route | Status | Evidence |
+|---|---|---|---|---|
+| T1 | S2, S9 | inline | done | `vision/dataset.py`, `requirements-vision.txt`; tests/test_dataset.py RED→GREEN; counts match MVTec (245 train, 124 test) |
+| T2 | S3, S5, S8, S9 | inline | done | `reports/vision_patchcore.json`: image AUROC 1.0, F1 0.9945, pixel AUROC 0.992, 0 false rejections, 90/92 defects flagged |
+| T3 | S4, S8, S9 | inline | done | `reports/vision_defect_type.json`: accuracy 0.737 on 38 held-out (54 train); crop test RED→GREEN |
+| T4 | S6, S8 | inline | done | `vision/detector.py` (`DETECTOR=modelo|heuristico`), `reports/vision_pipeline.json`: 70/70 OK-vs-defect, type 0.737, latency p95 55 ms; 20 pytest pass |
+| T7 | S3, S8 | inline | pending | threshold chosen on a validation split separate from the test images (see L5) |
+| T5 | S7 | inline | pending | simulator on held-out images + ground truth log |
+| T6 | S1–S9 | inline | pending | docs, contract `score` description, agents/ log |
+
+Route evidence: tasks are sequential (each depends on the previous one), so no Writer trigger applies; the parent works inline.
+
+## Log
+
+- **L1 (2026-10-23, user, verbatim):** "si" — answer to "¿Seguimos con el modelo de visión en esta rama?". Approach chosen: "Anomalías + tipo (Recommended)".
+- **L2 (2026-10-23):** hardware: NVIDIA RTX 4050 Laptop (6 GB), 23 GB RAM, 153 GB free disk. Anomalib 2.x API confirmed via its docs: `MVTecAD`, `Patchcore`, `Engine.fit/test/export`, `TorchInferencer`; `pred_score` is normalized to [0, 1].
+- **L3 (2026-10-23):** MVTec's own download links and the one inside Anomalib 2.7.0 return HTTP 404. Dataset fetched from the Hugging Face mirror `foersben/mvtec-ad` (original layout, CC BY-NC-SA 4.0); image counts verified against the official ones in `vision.dataset.download`.
+- **L4 (2026-10-23):** Anomalib refuses pickled checkpoints unless `TRUST_REMOTE_CODE=1`. `vision/models.py::load_patchcore` enables it only while loading a file inside `models/` and restores it (tests/test_models.py, written together with the code, no RED phase).
+- **L5 (2026-10-23):** caveat: with `val_split_mode=same_as_test` (default) Anomalib picks the decision threshold on the test images, so the perfect OK-vs-defect numbers are optimistic; held-out set is small (32 good, 38 defective). Tracked as T7.
+- **Next step:** T5 (simulator on held-out images), then T7, T6.
