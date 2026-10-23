@@ -11,3 +11,6 @@ models/
 results/
 lightning_logs/
 runs/
+
+# Local agent tooling cache (skill registry), not project content
+.atl/
