@@ -8,10 +8,10 @@ from vision.detector import (
     encode_png_b64,
     load_detector,
 )
-from vision.models import DEFECT_TYPE_PATH, PATCHCORE_PATH
+from vision.models import DEFECT_TYPE_PATH, PATCHCORE_PATH, THRESHOLD_PATH
 
 models_ready = pytest.mark.skipif(
-    not (PATCHCORE_PATH.is_file() and DEFECT_TYPE_PATH.is_file() and category_dir().is_dir()),
+    not all(p.exists() for p in (PATCHCORE_PATH, DEFECT_TYPE_PATH, THRESHOLD_PATH, category_dir())),
     reason="trained models or MVTec leather not available (run vision.train_*)",
 )
 
@@ -49,7 +49,7 @@ def test_model_approves_a_held_out_good_piece():
     path = next(p for p, label in held_out_images(category_dir()) if label == "ok")
     result = load_detector("modelo").predict(load_rgb(path))
     assert result["label"] == "ok"
-    assert 0.0 <= result["score"] <= 1.0
+    assert 0.0 <= result["score"] < 0.5
 
 
 @models_ready
@@ -57,4 +57,4 @@ def test_model_rejects_a_held_out_defect_with_a_project_label():
     path = next(p for p, label in held_out_images(category_dir()) if label != "ok")
     result = load_detector("modelo").predict(load_rgb(path))
     assert result["label"] in DEFECT_LABELS.values()
-    assert 0.0 <= result["score"] <= 1.0
+    assert 0.5 <= result["score"] <= 1.0

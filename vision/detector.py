@@ -3,7 +3,8 @@
     predict(image_rgb) -> {"label": str, "score": float}
 
 `label == "ok"` means a good piece; any other label is the defect type.
-`score` is a defect score in [0, 1] (higher = more likely defective).
+`score` is a defect score in [0, 1] (higher = more likely defective);
+for ModelDetector, score >= 0.5 exactly when the piece is rejected.
 
 Choose one with load_detector(name) or the DETECTOR environment variable:
 - "modelo" (default): PatchCore + defect-type classifier (vision/train_*.py).
@@ -56,18 +57,22 @@ class ModelDetector:
 
     def __init__(self):
         from vision.defect_type import DefectTypeClassifier
-        from vision.models import DEFECT_TYPE_PATH, load_patchcore
+        from vision.models import DEFECT_TYPE_PATH, load_patchcore, load_threshold
 
         self.patchcore = load_patchcore()
+        self.threshold = load_threshold()
         self.classifier = DefectTypeClassifier.load(DEFECT_TYPE_PATH)
 
     def predict(self, image: np.ndarray) -> dict:
+        from vision.calibration import rescale
         from vision.defect_type import crop_at_peak, to_input
 
         image = to_input(image)
         pred = self.patchcore.predict(image)
-        score = min(1.0, max(0.0, float(pred.pred_score.item())))
-        if not bool(pred.pred_label.item()):
+        raw = float(pred.pred_score.item())
+        # Calibrated threshold, rescaled so that score >= 0.5 means defect.
+        score = rescale(raw, self.threshold)
+        if raw < self.threshold:
             return {"label": "ok", "score": score}
         heat = pred.anomaly_map.squeeze().cpu().numpy()
         [(label, _)] = self.classifier.predict([crop_at_peak(image, heat)])

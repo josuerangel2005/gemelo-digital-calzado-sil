@@ -4,53 +4,66 @@
   "seed": 42,
   "device": "cuda",
   "anomalib_test_metrics": {
+    "note": "F1 scores use Anomalib's own threshold (synthetic validation), not the calibrated one",
     "image_AUROC": 1.0,
-    "image_F1Score": 0.994535505771637,
-    "pixel_AUROC": 0.9922617673873901,
-    "pixel_F1Score": 0.4385744631290436
+    "image_F1Score": 0.9292929172515869,
+    "pixel_AUROC": 0.9922024607658386,
+    "pixel_F1Score": 0.2145773470401764
+  },
+  "calibration": {
+    "threshold": 0.6185321509838104,
+    "good_images": 49,
+    "defect_images": 54,
+    "source": "train/good not memorized by PatchCore + defects reserved for the type classifier"
   },
   "false_rejection_rate": 0.0,
   "good": {
     "images": 32,
     "flagged_as_defect": 0,
     "rate": 0.0,
-    "score_mean": 0.315040884539485
+    "score_min": 0.46598514914512634,
+    "score_max": 0.5727904438972473
   },
   "recall_per_defect": {
     "mancha": {
       "images": 19,
-      "flagged_as_defect": 18,
-      "rate": 0.9473684210526315,
-      "score_mean": 0.6823181008037768
+      "flagged_as_defect": 19,
+      "rate": 1.0,
+      "score_min": 0.7427686452865601,
+      "score_max": 1.0
     },
     "corte": {
       "images": 19,
       "flagged_as_defect": 19,
       "rate": 1.0,
-      "score_mean": 0.7631534275255705
+      "score_min": 0.7551261782646179,
+      "score_max": 1.0
     },
     "deformacion": {
       "images": 17,
       "flagged_as_defect": 17,
       "rate": 1.0,
-      "score_mean": 0.7708609980695388
+      "score_min": 0.9080444574356079,
+      "score_max": 1.0
     },
     "pegado": {
       "images": 19,
-      "flagged_as_defect": 18,
-      "rate": 0.9473684210526315,
-      "score_mean": 0.8864382270135378
+      "flagged_as_defect": 19,
+      "rate": 1.0,
+      "score_min": 0.7132482528686523,
+      "score_max": 1.0
     },
     "perforacion": {
       "images": 18,
       "flagged_as_defect": 18,
       "rate": 1.0,
-      "score_mean": 0.8287690016958449
+      "score_min": 0.9486002922058105,
+      "score_max": 1.0
     }
   },
   "latency_ms": {
-    "first": 78.80728500003897,
-    "median": 59.90632099974391,
-    "p95": 64.07460150007864
+    "first": 55.06101100036176,
+    "median": 55.928490000042075,
+    "p95": 57.97389130002557
   }
 }

@@ -7,6 +7,7 @@ MODELS_DIR = ROOT / "models"
 PATCHCORE_DIR = MODELS_DIR / "patchcore"
 PATCHCORE_PATH = PATCHCORE_DIR / "weights" / "torch" / "model.pt"
 DEFECT_TYPE_PATH = MODELS_DIR / "defect_type.joblib"
+THRESHOLD_PATH = MODELS_DIR / "patchcore_threshold.json"
 REPORTS_DIR = ROOT / "reports"
 
 
@@ -36,3 +37,14 @@ def load_patchcore(path: Path = PATCHCORE_PATH):
             os.environ.pop("TRUST_REMOTE_CODE", None)
         else:
             os.environ["TRUST_REMOTE_CODE"] = previous
+
+
+def load_threshold(path: Path = THRESHOLD_PATH) -> float:
+    """Calibrated PatchCore threshold written by vision.train_patchcore."""
+    import json
+
+    if not path.is_file():
+        raise FileNotFoundError(
+            f"{path} not found. Train it with: python -m vision.train_patchcore"
+        )
+    return float(json.loads(path.read_text())["threshold"])

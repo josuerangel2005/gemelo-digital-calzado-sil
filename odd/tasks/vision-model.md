@@ -23,7 +23,7 @@ Branch: `feat/web-mqtt` (user: "mejor creemos una ramita y al final hacemos el p
 | T2 | S3, S5, S8, S9 | inline | done | `reports/vision_patchcore.json`: image AUROC 1.0, F1 0.9945, pixel AUROC 0.992, 0 false rejections, 90/92 defects flagged |
 | T3 | S4, S8, S9 | inline | done | `reports/vision_defect_type.json`: accuracy 0.737 on 38 held-out (54 train); crop test RED→GREEN |
 | T4 | S6, S8 | inline | done | `vision/detector.py` (`DETECTOR=modelo|heuristico`), `reports/vision_pipeline.json`: 70/70 OK-vs-defect, type 0.737, latency p95 55 ms; 20 pytest pass |
-| T7 | S3, S8 | inline | pending | threshold chosen on a validation split separate from the test images (see L5) |
+| T7 | S3, S8 | inline | done | `vision/calibration.py` (Youden J, ties favor recall; rescale so threshold→0.5), threshold 0.6185 from 49 unseen train/good + 54 classifier defects; held-out: 0/32 false rejections, 38/38 caught, type 0.789, p95 49.5 ms; tests RED→GREEN (33 pytest pass) |
 | T5 | S7 | inline | done | `simulator/main.py` (`IMAGENES=mvtec|sintetica`, `VERDAD_CSV`), `twin/audit.py`; tests RED→GREEN (28 pytest pass); E2E 30 pieces: 13/13 defects caught, 0 false rejections, type 9/13, 0 without decision |
 | T8 | S6 | inline | done | web: live per-type chart counts any model label (starts empty), score shown as 'Puntuación de defecto' in MQTT mode; vitest RED→GREEN (31 pass), tsc clean |
 | T6 | S1–S9 | inline | pending | docs, contract `score` description, agents/ log |
@@ -38,4 +38,6 @@ Route evidence: tasks are sequential (each depends on the previous one), so no W
 - **L4 (2026-10-23):** Anomalib refuses pickled checkpoints unless `TRUST_REMOTE_CODE=1`. `vision/models.py::load_patchcore` enables it only while loading a file inside `models/` and restores it (tests/test_models.py, written together with the code, no RED phase).
 - **L5 (2026-10-23):** caveat: with `val_split_mode=same_as_test` (default) Anomalib picks the decision threshold on the test images, so the perfect OK-vs-defect numbers are optimistic; held-out set is small (32 good, 38 defective). Tracked as T7.
 - **L6 (2026-10-23):** E2E SIL run (Mosquitto, controller with DETECTOR=modelo, simulator IMAGENES=mvtec N_PIEZAS=30 P_DEFECTO=0.5, web in MQTT mode): web 30 inspected, 17 OK, 13 RECHAZO, latency mean 62 ms, 0 page errors; `twin.audit`: 0 missed, 0 false rejections, type 9/13. Web chart only knows mancha/costura/pegado → T8.
-- **Next step:** T7, then T6.
+- **L7 (2026-10-23):** first T7 attempt (Anomalib `val_split_mode=synthetic`) kept AUROC 1.0 but gave 19/32 false rejections: synthetic anomalies calibrate the threshold badly. Replaced by calibration on real non-test images; train/good split by Anomalib is deterministic with seed 42 (196 fitted, 49 unseen).
+- **L8 (2026-10-23):** margin is narrow: max good score 0.573 vs threshold 0.6185 vs min defect 0.713. Type confusions: perforacion→corte 3/7, deformacion→perforacion 2/7.
+- **Next step:** T6 (contract descriptions done, guide done; agents/ log, README), then independent verification of the feature.
