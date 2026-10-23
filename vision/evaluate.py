@@ -75,6 +75,8 @@ def main() -> None:
             "target": LATENCY_TARGET_MS,
             "meets_target_p95": bool(np.percentile(steady, 95) < LATENCY_TARGET_MS),
         },
+        # Detector capacity; the line's real rate is set by the simulator (INTERVALO_S).
+        "throughput_piezas_por_min": 60000 / float(np.median(steady)),
     }
     REPORT_PATH.parent.mkdir(exist_ok=True)
     REPORT_PATH.write_text(json.dumps(report, indent=2, ensure_ascii=False) + "\n")

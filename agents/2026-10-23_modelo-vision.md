@@ -42,7 +42,8 @@ Medidos sobre 70 imágenes reservadas (32 buenas y 38 defectuosas) que ningún m
 | Piezas buenas rechazadas por error | 0 de 32 |
 | Defectos detectados | 38 de 38 |
 | Tipo correcto entre los detectados | 78,9 % |
-| Latencia p95 | 49,5 ms (meta < 200 ms) |
+| Latencia p95 | 49,8 ms (meta < 200 ms) |
+| Capacidad del detector | ~1350 piezas/min |
 
 Corrida de punta a punta (Mosquitto, controlador, simulador y web en modo MQTT, 30 piezas), con la versión anterior a la calibración final:
 - defectos detectados: 13 de 13;

@@ -42,9 +42,11 @@ SEED = 42
 def build_datamodule() -> MVTecAD:
     """MVTec leather with a validation split that never touches the test set.
 
-    The decision threshold is tuned on synthetic anomalies made from 20 % of
-    train/good. Anomalib's default (same_as_test) would tune it on the test
-    images and make the reported metrics optimistic.
+    20 % of train/good is kept out of PatchCore's memory (Anomalib uses it
+    for synthetic validation). Those images, plus the classifier's defects,
+    calibrate the real decision threshold in calibrate(). Anomalib's default
+    (same_as_test) would tune on the test images and make the report
+    optimistic.
     """
     return MVTecAD(
         root=DATA_ROOT,

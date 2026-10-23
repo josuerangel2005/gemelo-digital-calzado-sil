@@ -149,7 +149,8 @@ python -m vision.evaluate            # KPIs de la cadena completa a 256x256
 | Piezas buenas rechazadas por error | 0 de 32 |
 | Defectos detectados | 38 de 38 |
 | Tipo de defecto correcto (entre los detectados) | 78,9 % |
-| Latencia por pieza (p95) | 49,5 ms (meta < 200 ms) |
+| Latencia por pieza (p95) | 49,8 ms (meta < 200 ms) |
+| Capacidad del detector (throughput) | ~1350 piezas/min (el ritmo real de la línea lo fija `INTERVALO_S`) |
 | AUROC por imagen / por píxel (Anomalib) | 1,000 / 0,992 |
 
 Con tan pocas imágenes, estos números tienen mucha incertidumbre: sirven para comparar versiones, no como garantía.
