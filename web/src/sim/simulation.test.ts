@@ -168,10 +168,18 @@ describe("MQTT mode", () => {
     expect(state.events[0]).toMatchObject({ id: 3, label: "sin defecto" })
   })
 
-  it("keeps labels from a real model that the simulation does not know", () => {
-    const state = reducer(live, decision(4, "RECHAZO", "deformacion"))
-    expect(state.events[0].label).toBe("deformacion")
-    expect(state.defects).toEqual(initialState.defects)
+  it("counts by type every label the real model publishes", () => {
+    expect(live.defects).toEqual({})
+    let state = reducer(live, decision(4, "RECHAZO", "deformacion"))
+    state = reducer(state, decision(5, "RECHAZO", "deformacion"))
+    state = reducer(state, decision(6, "OK", "ok"))
+    expect(state.events[0].label).toBe("sin defecto")
+    expect(state.events[1].label).toBe("deformacion")
+    expect(state.defects).toEqual({ deformacion: 2 })
+  })
+
+  it("keeps the three simulated defect types in local mode", () => {
+    expect(initialState.defects).toEqual({ mancha: 0, costura: 0, pegado: 0 })
   })
 
   it("drops a capture left without a decision and counts it as lost", () => {

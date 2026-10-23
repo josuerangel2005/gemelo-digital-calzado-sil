@@ -141,8 +141,8 @@ function onDecision(state: SimState, msg: DecisionMessage): SimState {
     inspected: state.inspected + 1,
     ok: state.ok + (rejected ? 0 : 1),
     rejected: state.rejected + (rejected ? 1 : 0),
-    defects: defect
-      ? { ...state.defects, [defect]: state.defects[defect] + 1 }
+    defects: rejected
+      ? { ...state.defects, [msg.label]: (state.defects[msg.label] ?? 0) + 1 }
       : state.defects,
     events: [event, ...state.events].slice(0, 80),
     lastCapture: event,
@@ -152,9 +152,12 @@ function onDecision(state: SimState, msg: DecisionMessage): SimState {
 
 export function reducer(state: SimState, action: Action): SimState {
   const live = state.mode === "mqtt"
-  if (action.type === "setMode") return { ...initialState, mode: action.mode }
+  if (action.type === "setMode")
+    return action.mode === "mqtt"
+      ? { ...initialState, mode: "mqtt", defects: {} }
+      : { ...initialState }
   if (action.type === "pause") return { ...state, paused: !state.paused }
-  if (action.type === "reset") return { ...initialState, mode: state.mode }
+  if (action.type === "reset") return reducer(state, { type: "setMode", mode: state.mode })
   if (action.type === "invalidMessage")
     return { ...state, invalidMessages: state.invalidMessages + 1 }
   if (action.type === "capture")

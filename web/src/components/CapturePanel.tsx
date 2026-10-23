@@ -104,7 +104,9 @@ export function CapturePanel({
           </div>
           <div>
             <div className="mb-1 flex justify-between">
-              <span className="data-label">Confianza</span>
+              <span className="data-label">
+                {live ? "Puntuación de defecto" : "Confianza"}
+              </span>
               <span className="mono text-xs">{score.toFixed(2)}</span>
             </div>
             <div className="confidence-track">

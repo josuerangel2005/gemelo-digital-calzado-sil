@@ -25,7 +25,7 @@ Branch: `feat/web-mqtt` (user: "mejor creemos una ramita y al final hacemos el p
 | T4 | S6, S8 | inline | done | `vision/detector.py` (`DETECTOR=modelo|heuristico`), `reports/vision_pipeline.json`: 70/70 OK-vs-defect, type 0.737, latency p95 55 ms; 20 pytest pass |
 | T7 | S3, S8 | inline | pending | threshold chosen on a validation split separate from the test images (see L5) |
 | T5 | S7 | inline | done | `simulator/main.py` (`IMAGENES=mvtec|sintetica`, `VERDAD_CSV`), `twin/audit.py`; tests RED→GREEN (28 pytest pass); E2E 30 pieces: 13/13 defects caught, 0 false rejections, type 9/13, 0 without decision |
-| T8 | S6 | inline | pending | web: live 'Defectos por tipo' must show the model labels (corte, deformacion, perforacion missing) and 'Confianza' must read as defect score |
+| T8 | S6 | inline | done | web: live per-type chart counts any model label (starts empty), score shown as 'Puntuación de defecto' in MQTT mode; vitest RED→GREEN (31 pass), tsc clean |
 | T6 | S1–S9 | inline | pending | docs, contract `score` description, agents/ log |
 
 Route evidence: tasks are sequential (each depends on the previous one), so no Writer trigger applies; the parent works inline.
@@ -38,4 +38,4 @@ Route evidence: tasks are sequential (each depends on the previous one), so no W
 - **L4 (2026-10-23):** Anomalib refuses pickled checkpoints unless `TRUST_REMOTE_CODE=1`. `vision/models.py::load_patchcore` enables it only while loading a file inside `models/` and restores it (tests/test_models.py, written together with the code, no RED phase).
 - **L5 (2026-10-23):** caveat: with `val_split_mode=same_as_test` (default) Anomalib picks the decision threshold on the test images, so the perfect OK-vs-defect numbers are optimistic; held-out set is small (32 good, 38 defective). Tracked as T7.
 - **L6 (2026-10-23):** E2E SIL run (Mosquitto, controller with DETECTOR=modelo, simulator IMAGENES=mvtec N_PIEZAS=30 P_DEFECTO=0.5, web in MQTT mode): web 30 inspected, 17 OK, 13 RECHAZO, latency mean 62 ms, 0 page errors; `twin.audit`: 0 missed, 0 false rejections, type 9/13. Web chart only knows mancha/costura/pegado → T8.
-- **Next step:** T8, then T7, then T6.
+- **Next step:** T7, then T6.

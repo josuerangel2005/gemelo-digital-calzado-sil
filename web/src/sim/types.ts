@@ -83,7 +83,8 @@ export type SimState = {
   lastCapture: EventItem | null
   events: EventItem[]
   latencies: number[]
-  defects: Record<Defect, number>
+  /** Rejections per label: the 3 simulated types locally, any model label in MQTT mode. */
+  defects: Record<string, number>
 }
 
 /** Random source in [0, 1). Injected so tests and audits can reproduce runs. */

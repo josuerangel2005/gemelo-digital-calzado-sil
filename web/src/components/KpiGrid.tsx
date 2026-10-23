@@ -1,5 +1,4 @@
-import { defectTypes } from "../sim/simulation"
-import type { Defect, SimState } from "../sim/types"
+import type { SimState } from "../sim/types"
 import { Panel } from "./Panel"
 
 function MiniLineChart({ values }: { values: number[] }) {
@@ -28,11 +27,14 @@ function MiniLineChart({ values }: { values: number[] }) {
   )
 }
 
-function DefectBars({ defects }: { defects: Record<Defect, number> }) {
+function DefectBars({ defects }: { defects: Record<string, number> }) {
+  const types = Object.keys(defects)
   const max = Math.max(1, ...Object.values(defects))
+  if (types.length === 0)
+    return <p className="telemetry-note">Sin rechazos todavía.</p>
   return (
     <div className="bar-chart">
-      {defectTypes.map((type) => (
+      {types.map((type) => (
         <div className="bar-row" key={type}>
           <span>{type}</span>
           <div>
