@@ -26,7 +26,7 @@ Branch: `feat/web-mqtt` (user: "mejor creemos una ramita y al final hacemos el p
 | T7 | S3, S8 | inline | done | `vision/calibration.py` (Youden J, ties favor recall; rescale so threshold→0.5), threshold 0.6185 from 49 unseen train/good + 54 classifier defects; held-out: 0/32 false rejections, 38/38 caught, type 0.789, p95 49.5 ms; tests RED→GREEN (33 pytest pass) |
 | T5 | S7 | inline | done | `simulator/main.py` (`IMAGENES=mvtec|sintetica`, `VERDAD_CSV`), `twin/audit.py`; tests RED→GREEN (28 pytest pass); E2E 30 pieces: 13/13 defects caught, 0 false rejections, type 9/13, 0 without decision |
 | T8 | S6 | inline | done | web: live per-type chart counts any model label (starts empty), score shown as 'Puntuación de defecto' in MQTT mode; vitest RED→GREEN (31 pass), tsc clean |
-| T6 | S1–S9 | inline | pending | docs, contract `score` description, agents/ log |
+| T6 | S1–S9 | inline | done | contract descriptions, guide section 7 + limitations, README, `agents/2026-10-23_modelo-vision.md` |
 
 Route evidence: tasks are sequential (each depends on the previous one), so no Writer trigger applies; the parent works inline.
 
@@ -40,4 +40,4 @@ Route evidence: tasks are sequential (each depends on the previous one), so no W
 - **L6 (2026-10-23):** E2E SIL run (Mosquitto, controller with DETECTOR=modelo, simulator IMAGENES=mvtec N_PIEZAS=30 P_DEFECTO=0.5, web in MQTT mode): web 30 inspected, 17 OK, 13 RECHAZO, latency mean 62 ms, 0 page errors; `twin.audit`: 0 missed, 0 false rejections, type 9/13. Web chart only knows mancha/costura/pegado → T8.
 - **L7 (2026-10-23):** first T7 attempt (Anomalib `val_split_mode=synthetic`) kept AUROC 1.0 but gave 19/32 false rejections: synthetic anomalies calibrate the threshold badly. Replaced by calibration on real non-test images; train/good split by Anomalib is deterministic with seed 42 (196 fitted, 49 unseen).
 - **L8 (2026-10-23):** margin is narrow: max good score 0.573 vs threshold 0.6185 vs min defect 0.713. Type confusions: perforacion→corte 3/7, deformacion→perforacion 2/7.
-- **Next step:** T6 (contract descriptions done, guide done; agents/ log, README), then independent verification of the feature.
+- **Next step:** independent verification of the whole feature (Risk items 2, 3, 5).
