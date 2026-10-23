@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Decision",
+  "type": "object",
+  "required": ["pieza_id", "timestamp", "decision", "label", "score", "latencia_ms"],
+  "properties": {
+    "pieza_id": {"type": "integer", "minimum": 0},
+    "timestamp": {"type": "number"},
+    "decision": {"enum": ["OK", "RECHAZO"]},
+    "label": {"type": "string"},
+    "score": {"type": "number", "minimum": 0, "maximum": 1},
+    "latencia_ms": {"type": "number", "minimum": 0}
+  },
+  "additionalProperties": false
+}

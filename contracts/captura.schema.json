@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Captura",
+  "type": "object",
+  "required": ["pieza_id", "timestamp", "imagen_png_b64"],
+  "properties": {
+    "pieza_id": {"type": "integer", "minimum": 0},
+    "timestamp": {"type": "number"},
+    "imagen_png_b64": {"type": "string", "minLength": 1}
+  },
+  "additionalProperties": false
+}

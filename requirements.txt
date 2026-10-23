@@ -1,0 +1,9 @@
+simpy>=4.1
+paho-mqtt>=2.1
+opencv-python-headless>=4.10
+numpy>=1.26
+transitions>=0.9
+streamlit>=1.39
+pandas>=2.2
+jsonschema>=4.23
+pytest>=8.3
